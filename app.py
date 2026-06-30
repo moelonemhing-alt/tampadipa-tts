@@ -4,7 +4,7 @@ import edge_tts
 import os
 from datetime import datetime, timedelta
 
-# Web App Page Config သတ်မှတ်ခြင်း (App နာမည်ကို "Tam Pa Di Pa" ဟု ပေးထားပါသည်)
+# Web App Page Config သတ်မှတ်ခြင်း
 st.set_page_config(
     page_title="Tam Pa Di Pa - AI Text-To-Speech", 
     page_icon="🎙️", 
@@ -42,7 +42,6 @@ st.markdown("""
         color: white;
         box-shadow: 0 6px 20px rgba(224, 30, 90, 0.5);
     }
-    /* Streamlit widgets border style */
     div[data-testid="stTextInput"] input {
         background-color: #161925 !important;
         color: white !important;
@@ -92,7 +91,7 @@ if "user_speed" not in st.session_state:
 if "user_pitch" not in st.session_state:
     st.session_state.user_pitch = 0
 
-# သမိုင်းမှတ်တမ်းကို ၂၄ နာရီ (၁ ရက်) သာ သိမ်းဆည်းရန်နှင့် ကျော်လွန်က Auto ဖျက်ရန် လုပ်ဆောင်ချက်
+# သမိုင်းမှတ်တမ်းကို ၂၄ နာရီသာ သိမ်းဆည်းရန်
 def cleanup_old_history():
     now = datetime.now()
     st.session_state.history = [
@@ -102,13 +101,11 @@ def cleanup_old_history():
 
 cleanup_old_history()
 
-# စာသားဖျက်သိမ်းသည့် လုပ်ဆောင်ချက်
 def clear_text():
     st.session_state.text_input = ""
     st.session_state.audio_bytes = None
     st.session_state.srt_content = None
 
-# အပေါင်းအနှုတ်ခလုတ်များ နှိပ်လျှင် တန်ဖိုးပြောင်းလဲပေးမည့် စနစ်များ
 def speed_minus():
     if st.session_state.user_speed > -10:
         st.session_state.user_speed -= 1
@@ -130,8 +127,7 @@ st.title("🎙️ Tam Pa Di Pa (တမ္ပဒီပ)")
 st.caption("မြန်မာ AI အဆင့်မြင့် အသံထုတ်ယူရေး စနစ်")
 st.write("---")
 
-# ၁။ အမျိုးသားအသံ ၃ မျိုးနှင့် အမျိုးသမီးအသံ ၃ မျိုး Preset သတ်မှတ်ခြင်း
-# (အသံများ သိသာစွာ ကွဲပြားစေရန် Pitch, Rate တန်ဖိုးများကို သိသိသာသာ မြှင့်တင်ပြင်ဆင်ပေးထားပါသည်)
+# အမျိုးသားအသံ ၃ မျိုးနှင့် အမျိုးသမီးအသံ ၃ မျိုး Preset သတ်မှတ်ခြင်း
 voice_presets = {
     "မနီလာ 👩 (အသံကြည်လင် - အမျိုးသမီး)": {"voice": "my-MM-NilarNeural", "pitch": 0, "rate": 0},
     "မပုလဲ 👧 (ချိုသာပျိုပို - အမျိုးသမီး)": {"voice": "my-MM-NilarNeural", "pitch": 30, "rate": 10},
@@ -141,7 +137,7 @@ voice_presets = {
     "ကိုမင်း 👴 (တည်ငြိမ်ရင့်ကျက် - အမျိုးသား)": {"voice": "my-MM-ThihaNeural", "pitch": -25, "rate": -12}
 }
 
-# ၂။ စကားပြော စိတ်ခံစားမှု စတိုင် ၁၁ မျိုး Preset သတ်မှတ်ခြင်း
+# စကားပြော စိတ်ခံစားမှု စတိုင် ၁၁ မျိုး Preset သတ်မှတ်ခြင်း
 emotion_presets = {
     "ပုံမှန်အသံ 😐": {"pitch": 0, "rate": 0},
     "စိတ်လှုပ်ရှား 🥰": {"pitch": 10, "rate": 15},
@@ -157,14 +153,13 @@ emotion_presets = {
     "ကြောက်လန့် 😨": {"pitch": 15, "rate": 25}
 }
 
-# UI ဝစ်ဂျက်များ စတင်တည်ဆောက်ခြင်း
 selected_voice_name = st.selectbox("အသံရွေးချယ်ပါ -", list(voice_presets.keys()))
 selected_emotion_name = st.selectbox("စကားပြော စိတ်ခံစားမှု စတိုင်များ -", list(emotion_presets.keys()))
 
 vp = voice_presets[selected_voice_name]
 ep = emotion_presets[selected_emotion_name]
 
-# ⚙️ သင့်ပုံထဲကအတိုင်း အပေါင်း (+) အနှုတ် (-) နှင့် Slider Layout ပြုလုပ်ခြင်း
+# အမြန်နှုန်း (SPEED) ချိန်ညှိမှုစနစ်
 st.write("⚙️ **အမြန်နှုန်း (SPEED)**")
 col_s1, col_s2, col_s3, col_s4 = st.columns([1, 5, 1, 1.5])
 with col_s1:
@@ -176,6 +171,7 @@ with col_s3:
 with col_s4:
     st.markdown(f'<div style="background-color:#e01e5a; color:white; font-weight:bold; border-radius:8px; text-align:center; padding:10px; font-size:16px;">{st.session_state.user_speed}</div>', unsafe_allow_html=True)
 
+# အသံ အတက်/အကျ (PITCH) ချိန်ညှိမှုစနစ်
 st.write("🔊 **အသံ အတက်/အကျ (PITCH)**")
 col_p1, col_p2, col_p3, col_p4 = st.columns([1, 5, 1, 1.5])
 with col_p1:
@@ -187,14 +183,13 @@ with col_p3:
 with col_p4:
     st.markdown(f'<div style="background-color:#8a2be2; color:white; font-weight:bold; border-radius:8px; text-align:center; padding:10px; font-size:16px;">{st.session_state.user_pitch}</div>', unsafe_allow_html=True)
 
-# 📂 ဒေါင်းလုဒ်ဆွဲမည့် ဖိုင်အမည်သတ်မှတ်ရန် နေရာ
+# ဖိုင်အမည် သတ်မှတ်ရန် နေရာ
 st.write("### 📂 ဖိုင်အမည် သတ်မှတ်ရန်")
 file_name_input = st.text_input(
     "ဒေါင်းလုဒ်ဆွဲမည့် ဖိုင်အမည်ကို ဤနေရာတွင် ရိုက်ထည့်ပါ -",
     value="tampadipa",
     key="file_name_widget"
 )
-# ဖိုင်နာမည် အဆင်ပြေစေရန် စစ်ဆေးခြင်း
 safe_file_name = "".join([c for c in file_name_input if c.isalnum() or c in (" ", "_", "-")]).strip()
 if not safe_file_name:
     safe_file_name = "tampadipa"
@@ -218,12 +213,11 @@ text = st.text_area(
 )
 st.session_state.text_input = text
 
-# စာလုံးရေတွက်စနစ်များ (တိုက်ရိုက်အလုပ်လုပ်ပါသည်)
+# စာလုံးရေတွက်စနစ်များ
 words_count = len(text.split()) if text.strip() else 0
 chars_count = len(text)
 lines_count = len(text.splitlines()) if text.strip() else 0
 
-# ဖုန်းတွင်ပါ အမြဲတမ်း ဘေးတိုက် (Horizontal) ပေါ်နေစေရန် Flex-Box သုံး၍ ရေးသားခြင်း
 st.markdown(f"""
 <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 5px; width: 100%; margin-top: 5px; margin-bottom: 10px;">
     <div class="counter-box" style="flex: 1; padding: 5px 2px;">
@@ -275,9 +269,10 @@ if st.button("အသံထုတ်ယူမည်", key="generate_audio_btn"):
         st.warning("ကျေးဇူးပြု၍ စာသားအရင်ရိုက်ထည့်ပါ!")
     else:
         with st.spinner("AI အသံနှင့် စာတန်းထိုး ပြုလုပ်နေပါသည်..."):
-            # အသံစတိုင် တွက်ချက်မှုစနစ် (Hz သို့ ပြောင်းလဲထားပါသည်)
-            final_pitch = vp["pitch"] + ep["pitch"] + (st.session_state.user_pitch * 5)
-            final_rate = vp["rate"] + ep["rate"] + (st.session_state.user_speed * 5)
+            # Pitch တွက်ချက်မှု (၃ ဆသို့ လျှော့ချ၍ Speed တင်ရလွယ်စေပါသည်)
+            final_pitch = vp["pitch"] + ep["pitch"] + (st.session_state.user_pitch * 3)
+            # Speed တွက်ချက်မှု (၁၀ ဆအထိ မြှင့်တင်ပေးလိုက်ပါသဖြင့် အလွန်မြန်မြန်ရွတ်ဆိုနိုင်ပါပြီ)
+            final_rate = vp["rate"] + ep["rate"] + (st.session_state.user_speed * 10)
             
             pitch_str = f"{final_pitch:+.0f}Hz"
             rate_str = f"{final_rate:+.0f}%"
@@ -287,7 +282,6 @@ if st.button("အသံထုတ်ယူမည်", key="generate_audio_btn"):
                     generate_speech(text, vp["voice"], pitch_str, rate_str)
                 )
                 
-                # ဒေါင်းလုဒ်လုပ်လျှင် မပျောက်သွားစေရန် မှတ်ဉာဏ်ထဲ သိမ်းဆည်းခြင်း
                 st.session_state.audio_bytes = audio_bytes
                 st.session_state.srt_content = srt_content
                 
@@ -301,11 +295,11 @@ if st.button("အသံထုတ်ယူမည်", key="generate_audio_btn"):
                     "srt_content": srt_content
                 })
                 
-                st.rerun()  # သန့်ရှင်းစွာ ပြန်လည်ပြသရန်
+                st.rerun()
             except Exception as e:
                 st.error(f"အမှားအယွင်း ဖြစ်ပွားခဲ့ပါသည်: {e}")
 
-# ထွက်ပေါ်လာသော အသံဖိုင်နှင့် ဒေါင်းလုဒ်ခလုတ်များ ပြသခြင်း (အမြဲတည်ရှိနေပါသည်)
+# ထွက်ပေါ်လာသော အသံဖိုင်နှင့် ဒေါင်းလုဒ်ခလုတ်များ
 if st.session_state.audio_bytes and st.session_state.srt_content:
     st.write("---")
     st.write("### 🎵 ထွက်ပေါ်လာသောအသံဖိုင်")
@@ -330,7 +324,7 @@ if st.session_state.audio_bytes and st.session_state.srt_content:
         )
     st.success("အောင်မြင်စွာ ထုတ်လုပ်ပြီးပါပြီ!")
 
-# ၅။ သမိုင်းမှတ်တမ်းပြသသည့် ကဏ္ဍ (History Section)
+# သမိုင်းမှတ်တမ်းပြသသည့် ကဏ္ဍ (History Section)
 if st.session_state.history:
     st.write("---")
     with st.expander("📜 History (လွန်ခဲ့သော ၂၄ နာရီအတွင်း ထုတ်လုပ်မှုများ)"):
@@ -343,10 +337,8 @@ if st.session_state.history:
             </div>
             """, unsafe_allow_html=True)
             
-            # မှတ်တမ်းတစ်ခုချင်းစီအလိုက် လုပ်ဆောင်ချက်ခလုတ်များ
             hist_col1, hist_col2, hist_col3 = st.columns([1.2, 1, 1])
             with hist_col1:
-                # စာသားပြန်လည်ရယူရန်ခလုတ်
                 if st.button("စာသားပြန်ယူမည်", key=f"reload_hist_btn_{idx}"):
                     st.session_state.text_input = item["full_text"]
                     st.session_state.audio_bytes = item["audio_bytes"]
